@@ -1,11 +1,28 @@
-# Zmaper
+# Zmaper — free, open-source projection mapping software for Windows
 
-A projection mapping application in the spirit of MadMapper: warp video, images and
+**Zmaper is a free and open-source projection mapping application for Windows, and
+an alternative to MadMapper, Resolume Arena and HeavyM.** Warp video, images and
 live camera onto real-world surfaces, mask them to the geometry of the object, and
-soft-blend overlapping projectors.
+soft-blend overlapping projectors. MIT licensed — no trial, watermark or feature gate.
+
+**[Download](https://github.com/zenith600/Zmaper/releases/latest)** ·
+**[Website](https://zenith600.github.io/Zmaper/)**
 
 Electron shell, WebGL2 rendering, borderless fullscreen output on the display of
 your choice.
+
+### At a glance
+
+| | |
+| --- | --- |
+| **Price** | Free, MIT licence |
+| **Platform** | Windows 10/11, 64-bit |
+| **Warping** | Quad (projective homography) and mesh (Catmull-Rom patches) |
+| **Masking** | Feathered polygon masks, stored in surface space |
+| **Multi-projector** | Per-edge soft edge blending with adjustable blend gamma |
+| **Sources** | Video (H.264/WebM/MOV/OGV), images, live webcam, calibration patterns |
+| **Remote control** | Phone UI over the LAN, paired by QR code |
+| **Not included** | Spout/NDI/Syphon, DMX/Art-Net, audio reactivity, HEVC playback |
 
 ## Running it
 

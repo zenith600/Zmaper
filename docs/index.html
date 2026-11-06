@@ -3,15 +3,92 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Zmaper — projection mapping for Windows</title>
-    <meta name="description" content="Open-source projection mapping: quad and mesh warping, video, images and live camera, masks and edge blending, with a phone remote for mapping from in front of the surface." />
+    <title>Zmaper — free open-source projection mapping software for Windows</title>
+    <meta name="description" content="Zmaper is free, open-source projection mapping software for Windows and an alternative to MadMapper and Resolume Arena. Quad and mesh warping, polygon masks, soft edge blending, video, image and webcam sources, plus a phone remote. MIT licensed." />
     <meta name="theme-color" content="#07080b" />
     <link rel="icon" href="icon.png" />
+    <link rel="canonical" href="https://zenith600.github.io/Zmaper/" />
 
-    <meta property="og:title" content="Zmaper — projection mapping for Windows" />
-    <meta property="og:description" content="Quad and mesh warping, masks, edge blending and a phone remote. Free and open source." />
-    <meta property="og:image" content="screenshot.png" />
+    <meta property="og:title" content="Zmaper — free open-source projection mapping software for Windows" />
+    <meta property="og:description" content="Quad and mesh warping, masks, edge blending and a phone remote. Free and open source under MIT." />
+    <meta property="og:image" content="https://zenith600.github.io/Zmaper/screenshot.png" />
+    <meta property="og:url" content="https://zenith600.github.io/Zmaper/" />
     <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Zmaper",
+      "description": "Free, open-source projection mapping software for Windows. Quad and mesh surface warping, polygon masks, soft edge blending, video, image and live camera sources, and a phone remote served over the local network.",
+      "applicationCategory": "MultimediaApplication",
+      "applicationSubCategory": "Projection mapping",
+      "operatingSystem": "Windows 10, Windows 11",
+      "softwareVersion": "1.0.0",
+      "url": "https://zenith600.github.io/Zmaper/",
+      "downloadUrl": "https://github.com/zenith600/Zmaper/releases/latest",
+      "codeRepository": "https://github.com/zenith600/Zmaper",
+      "license": "https://opensource.org/licenses/MIT",
+      "isAccessibleForFree": true,
+      "screenshot": "https://zenith600.github.io/Zmaper/screenshot.png",
+      "author": { "@type": "Person", "name": "zenith600" },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "featureList": [
+        "Quad surface warping with projective homography keystone correction",
+        "Mesh surface warping using Catmull-Rom patches for curved surfaces",
+        "Feathered polygon masks in surface space",
+        "Soft edge blending with adjustable blend gamma for multi-projector setups",
+        "Video, image, live webcam and calibration pattern sources",
+        "Borderless fullscreen projector output on a chosen display",
+        "Phone remote over the local network with QR code pairing"
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Zmaper free?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Zmaper is free and open source under the MIT licence. There is no trial period, watermark, feature gate or paid tier." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Zmaper a free alternative to MadMapper?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It covers the core of what MadMapper and Resolume Arena are used for: quad and mesh surface warping, polygon masks, soft edge blending, and video, image and live camera sources. It does not have Spout, NDI or Syphon, DMX or Art-Net output, audio reactivity, or a built-in material and shader library." }
+        },
+        {
+          "@type": "Question",
+          "name": "What operating systems does Zmaper run on?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Windows 10 and Windows 11, 64-bit. It is built on Electron and WebGL2, so macOS and Linux builds are a packaging change rather than a rewrite, but they have not been built or tested." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can Zmaper map onto curved surfaces?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Mesh surfaces use an n×m control grid interpolated as Catmull-Rom patches, which is what makes curved walls, columns, cylinders and domes line up correctly. Grid density can be changed at any time without losing the shape you already made." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Zmaper support multiple projectors?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It has per-edge soft edge blending with an adjustable blend gamma for overlapping projectors. Each running instance drives one output window, so multiple projectors means either one machine per projector or a single wide output spanning displays through the GPU." }
+        },
+        {
+          "@type": "Question",
+          "name": "What video formats does Zmaper support?",
+          "acceptedAnswer": { "@type": "Answer", "text": "H.264 MP4, WebM, MOV and OGV. HEVC and H.265 are not supported. Media that cannot be decoded is flagged in red in the media list rather than failing silently." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I control Zmaper from a phone?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Zmaper serves a touch interface on your local network and shows a QR code to pair. From the phone you can drag surface handles, assign media, adjust opacity and edge blending, and nudge handles down to a quarter of an output pixel. The link carries a random access key that can be reissued." }
+        }
+      ]
+    }
+    </script>
 
     <style>
       :root {
@@ -329,6 +406,44 @@
         color: var(--text);
       }
 
+      .faq { margin-top: 30px; display: flex; flex-direction: column; gap: 10px; }
+
+      .faq details {
+        background: linear-gradient(180deg, var(--panel), #0c0e14);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 2px 20px;
+        transition: border-color .16s ease;
+      }
+      .faq details[open], .faq details:hover { border-color: var(--line-hi); }
+
+      .faq summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 15px 0;
+        font-weight: 620;
+        font-size: 15.3px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .faq summary::-webkit-details-marker { display: none; }
+      .faq summary::before {
+        content: "+";
+        flex: 0 0 auto;
+        width: 19px;
+        height: 19px;
+        border-radius: 5px;
+        background: linear-gradient(135deg, var(--blue), var(--purple));
+        color: #050a14;
+        font-weight: 800;
+        font-size: 14px;
+        line-height: 19px;
+        text-align: center;
+      }
+      .faq details[open] summary::before { content: "\2212"; }
+      .faq details p { color: var(--dim); font-size: 14.5px; padding: 0 0 17px 31px; }
+
       footer {
         border-top: 1px solid var(--line);
         padding-block: 30px 56px;
@@ -356,6 +471,7 @@
         <span class="brand"><img src="icon.png" alt="" />Zmaper</span>
         <span class="nav-spacer"></span>
         <a class="nav-link" href="#features">Features</a>
+        <a class="nav-link" href="#faq">FAQ</a>
         <a class="nav-link" href="https://github.com/zenith600/Zmaper">GitHub</a>
       </nav>
     </div>
@@ -365,9 +481,11 @@
         <p class="eyebrow">Free &amp; open source · Windows</p>
         <h1><span class="grad">Projection mapping,<br />without the licence fee</span></h1>
         <p class="tagline">
-          Warp video, images and live camera onto real objects. Quad and mesh surfaces,
-          polygon masks, soft edge blending — and a phone remote, so you can map while
-          standing at the wall instead of hunched over the laptop.
+          <strong>Zmaper</strong> is free, open-source projection mapping software for
+          Windows — an alternative to MadMapper and Resolume Arena. Warp video, images
+          and live camera onto real objects with quad and mesh surfaces, polygon masks
+          and soft edge blending. Plus a phone remote, so you can map while standing at
+          the wall instead of hunched over the laptop.
         </p>
 
         <div class="cta">
@@ -534,6 +652,43 @@
               <h3>Codecs</h3>
               <p>H.264 MP4, WebM, MOV and OGV decode. HEVC/H.265 does not — and media that can't be decoded is flagged red in the list rather than failing silently.</p>
             </div>
+          </div>
+        </div>
+      </section>
+      <section id="faq">
+        <div class="wrap">
+          <p class="eyebrow">FAQ</p>
+          <h2>Questions people actually ask</h2>
+
+          <div class="faq">
+            <details open>
+              <summary>Is Zmaper free?</summary>
+              <p>Yes. Zmaper is free and open source under the MIT licence. There is no trial period, watermark, feature gate or paid tier.</p>
+            </details>
+            <details>
+              <summary>Is Zmaper a free alternative to MadMapper?</summary>
+              <p>It covers the core of what MadMapper and Resolume Arena are used for: quad and mesh surface warping, polygon masks, soft edge blending, and video, image and live camera sources. It does not have Spout, NDI or Syphon, DMX or Art-Net output, audio reactivity, or a built-in material and shader library.</p>
+            </details>
+            <details>
+              <summary>What operating systems does Zmaper run on?</summary>
+              <p>Windows 10 and Windows 11, 64-bit. It is built on Electron and WebGL2, so macOS and Linux builds are a packaging change rather than a rewrite, but they have not been built or tested.</p>
+            </details>
+            <details>
+              <summary>Can Zmaper map onto curved surfaces?</summary>
+              <p>Yes. Mesh surfaces use an n&times;m control grid interpolated as Catmull-Rom patches, which is what makes curved walls, columns, cylinders and domes line up correctly. Grid density can be changed at any time without losing the shape you already made.</p>
+            </details>
+            <details>
+              <summary>Does Zmaper support multiple projectors?</summary>
+              <p>It has per-edge soft edge blending with an adjustable blend gamma for overlapping projectors. Each running instance drives one output window, so multiple projectors means either one machine per projector or a single wide output spanning displays through the GPU.</p>
+            </details>
+            <details>
+              <summary>What video formats does Zmaper support?</summary>
+              <p>H.264 MP4, WebM, MOV and OGV. HEVC and H.265 are not supported. Media that cannot be decoded is flagged in red in the media list rather than failing silently.</p>
+            </details>
+            <details>
+              <summary>Can I control Zmaper from a phone?</summary>
+              <p>Yes. Zmaper serves a touch interface on your local network and shows a QR code to pair. From the phone you can drag surface handles, assign media, adjust opacity and edge blending, and nudge handles down to a quarter of an output pixel. The link carries a random access key that can be reissued.</p>
+            </details>
           </div>
         </div>
       </section>
