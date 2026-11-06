@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Zmaper — projection mapping for Windows</title>
     <meta name="description" content="Open-source projection mapping: quad and mesh warping, video, images and live camera, masks and edge blending, with a phone remote for mapping from in front of the surface." />
-    <meta name="theme-color" content="#0e0f13" />
+    <meta name="theme-color" content="#07080b" />
     <link rel="icon" href="icon.png" />
 
     <meta property="og:title" content="Zmaper — projection mapping for Windows" />
@@ -15,20 +15,23 @@
 
     <style>
       :root {
-        --bg: #0e0f13;
-        --bg-2: #15171d;
-        --bg-3: #1b1e26;
-        --line: #262a35;
-        --text: #e4e8f1;
-        --dim: #949bad;
-        --faint: #6b7284;
-        --accent: #4d8dff;
-        --radius: 10px;
+        --bg: #07080b;
+        --panel: #0f1117;
+        --panel-2: #141720;
+        --line: #1d212b;
+        --line-hi: #2b313f;
+        --text: #e9edf6;
+        --dim: #99a0b2;
+        --faint: #646b7d;
+        --blue: #4d8dff;
+        --purple: #a855f7;
+        --pink: #ff4d7d;
+        --r: 12px;
+        --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
       }
 
       * { margin: 0; padding: 0; box-sizing: border-box; }
-
-      html { scroll-behavior: smooth; }
+      html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
       body {
         background: var(--bg);
@@ -38,184 +41,262 @@
         overflow-x: hidden;
       }
 
-      a { color: var(--accent); }
-
-      .wrap {
-        max-width: 1080px;
-        margin: 0 auto;
-        padding-inline: 20px;
+      /* faint projector haze behind everything */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background:
+          radial-gradient(900px 520px at 72% -10%, rgba(77, 141, 255, 0.16), transparent 70%),
+          radial-gradient(760px 480px at 12% 4%, rgba(168, 85, 247, 0.12), transparent 70%);
       }
 
-      /* ---------- hero ---------- */
+      main, header, footer { position: relative; z-index: 1; }
+
+      a { color: var(--blue); }
+
+      .wrap { max-width: 1140px; margin: 0 auto; padding-inline: 22px; }
+
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 11.5px;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+
+      /* ---------------- nav ---------------- */
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-block: 20px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 680;
+        letter-spacing: -0.01em;
+        font-size: 17px;
+      }
+
+      .brand img { width: 30px; height: 30px; border-radius: 8px; }
+
+      .nav-spacer { flex: 1; }
+
+      .nav-link {
+        color: var(--dim);
+        text-decoration: none;
+        font-size: 14.5px;
+      }
+      .nav-link:hover { color: var(--text); }
+
+      /* ---------------- hero ---------------- */
 
       .hero {
-        position: relative;
-        padding-block: 72px 56px;
-        text-align: center;
-        overflow: hidden;
-      }
-
-      .hero::before {
-        content: "";
-        position: absolute;
-        inset: -40% 50% auto;
-        width: 900px;
-        height: 520px;
-        transform: translateX(-50%);
-        background: radial-gradient(ellipse at center, rgba(77, 141, 255, 0.18), transparent 65%);
-        pointer-events: none;
-      }
-
-      .hero > * { position: relative; }
-
-      .logo {
-        width: 84px;
-        height: 84px;
-        border-radius: 20px;
-        margin-bottom: 22px;
-        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+        gap: 52px;
+        align-items: center;
+        padding-block: 40px 70px;
       }
 
       h1 {
-        font-size: clamp(2.3rem, 7vw, 3.4rem);
-        letter-spacing: -0.02em;
-        line-height: 1.1;
+        font-size: clamp(2.35rem, 5.2vw, 3.6rem);
+        line-height: 1.05;
+        letter-spacing: -0.028em;
         font-weight: 700;
-        background: linear-gradient(100deg, #ffffff 15%, #9ec0ff 55%, #c79bff 90%);
+      }
+
+      h1 .grad {
+        background: linear-gradient(100deg, #ffffff 10%, #9ec0ff 48%, #d4a4ff 78%, #ff9ab6 100%);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
       }
 
       .tagline {
-        margin: 16px auto 0;
-        max-width: 620px;
+        margin-top: 18px;
         color: var(--dim);
-        font-size: clamp(1rem, 2.4vw, 1.14rem);
+        font-size: clamp(1rem, 1.6vw, 1.1rem);
+        max-width: 50ch;
       }
 
-      .cta {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-top: 34px;
-      }
+      .cta { display: flex; gap: 11px; flex-wrap: wrap; margin-top: 30px; }
 
       .btn {
         display: inline-flex;
-        align-items: center;
-        gap: 9px;
-        padding: 13px 24px;
-        border-radius: var(--radius);
-        border: 1px solid var(--line);
-        background: var(--bg-3);
+        flex-direction: column;
+        justify-content: center;
+        padding: 12px 22px;
+        border-radius: var(--r);
+        border: 1px solid var(--line-hi);
+        background: var(--panel-2);
         color: var(--text);
         text-decoration: none;
-        font-weight: 600;
-        font-size: 15px;
-        transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+        font-weight: 620;
+        font-size: 14.5px;
+        transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease;
       }
-
-      .btn:hover { transform: translateY(-2px); border-color: #3b4152; }
+      .btn:hover { transform: translateY(-2px); border-color: #3c4356; }
+      .btn small { font-weight: 500; font-size: 11.5px; color: var(--faint); margin-top: 1px; }
 
       .btn.primary {
-        background: linear-gradient(100deg, #4d8dff, #7a6cff);
+        background: linear-gradient(100deg, var(--blue), #7b6bff 65%, var(--purple));
         border-color: transparent;
-        color: #06101f;
+        color: #050a14;
+        box-shadow: 0 8px 26px rgba(77, 141, 255, .3);
       }
+      .btn.primary small { color: rgba(5, 10, 20, .62); }
+      .btn.primary:hover { box-shadow: 0 12px 34px rgba(77, 141, 255, .42); }
 
-      .btn small {
-        display: block;
-        font-weight: 500;
-        font-size: 12px;
-        opacity: 0.75;
-      }
+      .meta { margin-top: 18px; color: var(--faint); font-size: 12.8px; max-width: 46ch; }
 
-      .note {
-        margin-top: 18px;
-        color: var(--faint);
-        font-size: 13px;
-      }
+      /* ---------------- interactive stage ---------------- */
 
-      /* ---------- shot ---------- */
+      .stage-shell { position: relative; }
 
-      .shot {
-        margin: 8px auto 0;
+      .stage {
+        position: relative;
+        aspect-ratio: 16 / 10;
+        border-radius: 16px;
         border: 1px solid var(--line);
-        border-radius: 14px;
+        background:
+          linear-gradient(180deg, #0b0d12, #070809),
+          repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 26px),
+          repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 1px, transparent 1px 26px);
         overflow: hidden;
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-        background: var(--bg-2);
-        line-height: 0;
+        box-shadow: 0 34px 90px rgba(0, 0, 0, .66);
+        touch-action: none;
+        cursor: grab;
+      }
+      .stage.dragging { cursor: grabbing; }
+
+      /* On touch, never swallow the page scroll: this box is big enough to
+         trap a finger. Dragging stays a mouse affordance; the drift animation
+         keeps it alive for everyone else. */
+      @media (pointer: coarse) {
+        .stage { touch-action: pan-y; cursor: default; }
       }
 
-      .shot img { width: 100%; height: auto; display: block; }
+      .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
-      /* ---------- sections ---------- */
+      .stage-label {
+        position: absolute;
+        left: 14px;
+        bottom: 12px;
+        z-index: 3;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 1.1px;
+        text-transform: uppercase;
+        color: var(--faint);
+        background: rgba(7, 8, 11, .62);
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 5px 10px;
+        backdrop-filter: blur(6px);
+        pointer-events: none;
+        transition: opacity .35s ease;
+      }
 
-      section { padding-block: 56px; }
+      .stage-reset {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        z-index: 3;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--dim);
+        background: rgba(7, 8, 11, .62);
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 5px 10px;
+        cursor: pointer;
+        backdrop-filter: blur(6px);
+      }
+      .stage-reset:hover { color: var(--text); border-color: var(--line-hi); }
+
+      .fallback {
+        position: absolute;
+        inset: 0;
+        display: none;
+        place-items: center;
+        text-align: center;
+        padding: 26px;
+        color: var(--faint);
+        font-size: 14px;
+      }
+      .stage.no-gl .fallback { display: grid; }
+      .stage.no-gl canvas { display: none; }
+
+      /* ---------------- sections ---------------- */
+
+      section { padding-block: 66px; }
 
       h2 {
-        font-size: clamp(1.45rem, 4vw, 1.9rem);
-        letter-spacing: -0.01em;
-        margin-bottom: 10px;
+        font-size: clamp(1.5rem, 3.4vw, 2.05rem);
+        letter-spacing: -0.02em;
+        margin-top: 10px;
       }
 
-      .lede { color: var(--dim); max-width: 640px; margin-bottom: 30px; }
+      .lede { color: var(--dim); max-width: 60ch; margin-top: 10px; }
 
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
         gap: 16px;
+        margin-top: 34px;
       }
 
       .card {
-        background: var(--bg-2);
+        background: linear-gradient(180deg, var(--panel), #0c0e14);
         border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 20px;
+        border-radius: var(--r);
+        padding: 22px;
+        transition: border-color .16s ease, transform .16s ease;
       }
+      .card:hover { border-color: var(--line-hi); transform: translateY(-3px); }
 
-      .card h3 {
-        font-size: 1rem;
-        margin-bottom: 7px;
-        display: flex;
-        align-items: center;
-        gap: 9px;
+      .card svg { display: block; margin-bottom: 14px; }
+
+      .card h3 { font-size: 1.02rem; margin-bottom: 7px; letter-spacing: -0.01em; }
+      .card p { color: var(--dim); font-size: 14.3px; }
+
+      .shot {
+        margin-top: 34px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, .6);
+        line-height: 0;
+        background: var(--panel);
       }
-
-      .card p { color: var(--dim); font-size: 14.5px; }
-
-      .dot {
-        width: 9px;
-        height: 9px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #4d8dff, #a855f7);
-        flex: 0 0 auto;
-      }
+      .shot img { width: 100%; height: auto; display: block; }
 
       .split {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 34px;
+        grid-template-columns: 1.05fr .95fr;
+        gap: 46px;
         align-items: center;
+        margin-top: 30px;
       }
 
-      @media (max-width: 760px) {
-        .split { grid-template-columns: 1fr; gap: 22px; }
-      }
-
-      ul.ticks { list-style: none; margin-top: 14px; }
-
+      ul.ticks { list-style: none; margin-top: 18px; }
       ul.ticks li {
         color: var(--dim);
         font-size: 14.5px;
-        padding-left: 24px;
+        padding-left: 25px;
         position: relative;
-        margin-bottom: 9px;
+        margin-bottom: 10px;
       }
-
       ul.ticks li::before {
         content: "";
         position: absolute;
@@ -224,55 +305,68 @@
         width: 9px;
         height: 9px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #4d8dff, #a855f7);
+        background: linear-gradient(135deg, var(--blue), var(--purple));
       }
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14.5px;
-      }
-
-      th, td {
-        text-align: left;
-        padding: 11px 12px;
-        border-bottom: 1px solid var(--line);
-        vertical-align: top;
-      }
-
-      th { color: var(--faint); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.7px; }
-      td { color: var(--dim); }
-      td kbd {
-        background: var(--bg-3);
+      .keys {
+        background: linear-gradient(180deg, var(--panel), #0c0e14);
         border: 1px solid var(--line);
-        border-radius: 4px;
+        border-radius: var(--r);
+        padding: 8px 20px 16px;
+      }
+      .keys table { width: 100%; border-collapse: collapse; font-size: 14.3px; }
+      .keys td { padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--dim); }
+      .keys tr:last-child td { border-bottom: none; }
+      .keys td:first-child { width: 42%; color: var(--text); }
+      kbd {
+        background: var(--panel-2);
+        border: 1px solid var(--line-hi);
+        border-bottom-width: 2px;
+        border-radius: 5px;
         padding: 2px 7px;
-        font-family: ui-monospace, Consolas, monospace;
-        font-size: 12.5px;
+        font-family: var(--mono);
+        font-size: 12.3px;
         color: var(--text);
       }
 
-      .table-scroll { overflow-x: auto; }
-
       footer {
         border-top: 1px solid var(--line);
-        padding-block: 30px 54px;
+        padding-block: 30px 56px;
         color: var(--faint);
         font-size: 14px;
       }
-
       footer a { color: var(--dim); }
+
+      @media (max-width: 980px) {
+        .hero { grid-template-columns: 1fr; gap: 36px; padding-block: 26px 48px; }
+        .split { grid-template-columns: 1fr; gap: 28px; }
+        section { padding-block: 50px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * { animation: none !important; transition: none !important; }
+        html { scroll-behavior: auto; }
+      }
     </style>
   </head>
 
   <body>
-    <header class="hero">
-      <div class="wrap">
-        <img class="logo" src="icon.png" alt="" />
-        <h1>Projection mapping,<br />without the licence fee</h1>
+    <div class="wrap">
+      <nav>
+        <span class="brand"><img src="icon.png" alt="" />Zmaper</span>
+        <span class="nav-spacer"></span>
+        <a class="nav-link" href="#features">Features</a>
+        <a class="nav-link" href="https://github.com/zenith600/Zmaper">GitHub</a>
+      </nav>
+    </div>
+
+    <header class="wrap hero">
+      <div>
+        <p class="eyebrow">Free &amp; open source · Windows</p>
+        <h1><span class="grad">Projection mapping,<br />without the licence fee</span></h1>
         <p class="tagline">
           Warp video, images and live camera onto real objects. Quad and mesh surfaces,
-          polygon masks, soft edge blending, and a phone remote so you can map while
+          polygon masks, soft edge blending — and a phone remote, so you can map while
           standing at the wall instead of hunched over the laptop.
         </p>
 
@@ -283,111 +377,167 @@
           <a class="btn" href="https://github.com/zenith600/Zmaper/releases/latest/download/Zmaper-1.0.0-portable.exe">
             Portable build <small>No install · 78 MB</small>
           </a>
-          <a class="btn" href="https://github.com/zenith600/Zmaper">Source on GitHub</a>
         </div>
 
-        <p class="note">
-          Windows 10/11, 64-bit. The build is unsigned, so Windows shows a SmartScreen
-          warning on first launch — choose <em>More info</em> then <em>Run anyway</em>.
+        <p class="meta">
+          Windows 10/11, 64-bit. Unsigned build, so SmartScreen warns on first launch —
+          choose <em>More info</em> → <em>Run anyway</em>.
         </p>
+      </div>
+
+      <div class="stage-shell">
+        <div class="stage" id="stage">
+          <canvas id="gl"></canvas>
+          <canvas id="ui"></canvas>
+          <div class="stage-label" id="hint">Drag the corners &mdash; this is the real warp</div>
+          <button class="stage-reset" id="reset" type="button">Reset</button>
+          <div class="fallback">
+            <p>Your browser has no WebGL2, so the live demo is off.<br />The app itself needs it too.</p>
+          </div>
+        </div>
       </div>
     </header>
 
-    <div class="wrap">
-      <div class="shot">
-        <img src="screenshot.png" alt="The Zmaper editor: a keystoned quad and a curved mesh surface, with the inspector open on the right." width="1484" height="901" />
-      </div>
-    </div>
+    <main>
+      <section id="features">
+        <div class="wrap">
+          <p class="eyebrow">What it does</p>
+          <h2>Line a projector up with a real object — and keep it there</h2>
+          <p class="lede">Every surface gets its own warp, mask, colour and blend. Nothing is baked in.</p>
 
-    <section>
-      <div class="wrap">
-        <h2>What it does</h2>
-        <p class="lede">Everything you need to line a projector up with a real object and keep it there.</p>
+          <div class="grid">
+            <div class="card">
+              <svg width="54" height="34" viewBox="0 0 54 34" fill="none" aria-hidden="true">
+                <path d="M4 7 L49 3 L45 31 L8 27 Z" stroke="#4d8dff" stroke-width="1.6" fill="rgba(77,141,255,.12)"/>
+                <circle cx="4" cy="7" r="3" fill="#4d8dff"/><circle cx="49" cy="3" r="3" fill="#4d8dff"/>
+                <circle cx="45" cy="31" r="3" fill="#4d8dff"/><circle cx="8" cy="27" r="3" fill="#4d8dff"/>
+              </svg>
+              <h3>Quad warping</h3>
+              <p>Four corners, full keystone, driven by a true projective homography — so the image stays perspective-correct however hard you skew it.</p>
+            </div>
 
-        <div class="grid">
-          <div class="card">
-            <h3><span class="dot"></span>Quad warping</h3>
-            <p>Four corners, full keystone. A true projective homography, so the image stays perspective-correct no matter how hard you skew it — right for flat panels, screens and walls.</p>
-          </div>
-          <div class="card">
-            <h3><span class="dot"></span>Mesh warping</h3>
-            <p>An n×m control grid interpolated as Catmull-Rom patches, which is what makes curved walls, columns, cylinders and domes land properly. Change the grid density any time without losing your shape.</p>
-          </div>
-          <div class="card">
-            <h3><span class="dot"></span>Masks that stay put</h3>
-            <p>Draw polygon masks with feathering. They live in the surface's own coordinate space, so a mask stays locked to the surface however much you keep warping it.</p>
-          </div>
-          <div class="card">
-            <h3><span class="dot"></span>Edge blending</h3>
-            <p>Per-edge feathering with an adjustable blend gamma, so two overlapping projectors sum to a flat field instead of a bright seam down the middle.</p>
-          </div>
-          <div class="card">
-            <h3><span class="dot"></span>Any source</h3>
-            <p>Video, stills, live webcam, solid colours, and built-in calibration patterns — a labelled grid, colour bars, linearity squares and more. Drag files straight onto a surface.</p>
-          </div>
-          <div class="card">
-            <h3><span class="dot"></span>Real projector output</h3>
-            <p>A borderless fullscreen window on the display you choose, with no chrome and no handles. It owns its own playback, so nothing in the editor can stall the projection.</p>
+            <div class="card">
+              <svg width="54" height="34" viewBox="0 0 54 34" fill="none" aria-hidden="true">
+                <path d="M4 6 Q27 15 50 5 L50 29 Q27 19 4 28 Z" stroke="#a855f7" stroke-width="1.6" fill="rgba(168,85,247,.12)"/>
+                <path d="M19 9.6 Q19 20 19 25.6 M35 10.4 Q35 20 35 24.6" stroke="rgba(168,85,247,.55)" stroke-width="1.1"/>
+                <path d="M4 17 Q27 26 50 17" stroke="rgba(168,85,247,.55)" stroke-width="1.1"/>
+              </svg>
+              <h3>Mesh warping</h3>
+              <p>An n&times;m control grid interpolated as Catmull-Rom patches — what makes curved walls, columns, cylinders and domes actually land.</p>
+            </div>
+
+            <div class="card">
+              <svg width="54" height="34" viewBox="0 0 54 34" fill="none" aria-hidden="true">
+                <rect x="4" y="4" width="46" height="26" rx="3" stroke="#2b313f" stroke-width="1.4"/>
+                <path d="M14 27 L21 9 L33 7 L42 24 Z" fill="rgba(61,220,151,.18)" stroke="#3ddc97" stroke-width="1.6"/>
+              </svg>
+              <h3>Masks that stay put</h3>
+              <p>Feathered polygon masks stored in each surface's own coordinate space, so a mask stays locked to the surface as you keep warping.</p>
+            </div>
+
+            <div class="card">
+              <svg width="54" height="34" viewBox="0 0 54 34" fill="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id="eb1" x1="0" x2="1"><stop offset="0" stop-color="#4d8dff" stop-opacity=".55"/><stop offset="1" stop-color="#4d8dff" stop-opacity="0"/></linearGradient>
+                  <linearGradient id="eb2" x1="1" x2="0"><stop offset="0" stop-color="#ff4d7d" stop-opacity=".55"/><stop offset="1" stop-color="#ff4d7d" stop-opacity="0"/></linearGradient>
+                </defs>
+                <rect x="3" y="6" width="30" height="22" rx="2" fill="url(#eb1)" stroke="#4d8dff" stroke-width="1.2"/>
+                <rect x="21" y="6" width="30" height="22" rx="2" fill="url(#eb2)" stroke="#ff4d7d" stroke-width="1.2"/>
+              </svg>
+              <h3>Edge blending</h3>
+              <p>Per-edge feather with an adjustable blend gamma, so two overlapping projectors sum to a flat field instead of a bright seam.</p>
+            </div>
+
+            <div class="card">
+              <svg width="54" height="34" viewBox="0 0 54 34" fill="none" aria-hidden="true">
+                <rect x="3" y="5" width="21" height="15" rx="2" stroke="#4d8dff" stroke-width="1.4"/>
+                <path d="M10 12.5 L17 9 L17 16 Z" fill="#4d8dff"/>
+                <rect x="28" y="5" width="23" height="15" rx="2" stroke="#a855f7" stroke-width="1.4"/>
+                <circle cx="39.5" cy="12.5" r="4" stroke="#a855f7" stroke-width="1.4"/>
+                <rect x="3" y="24" width="48" height="6" rx="2" stroke="#2b313f" stroke-width="1.3"/>
+              </svg>
+              <h3>Any source</h3>
+              <p>Video, stills, live webcam with a device picker, solid colours, and calibration patterns — including a TL/TR/BL/BR labelled grid. Drag files straight onto a surface.</p>
+            </div>
+
+            <div class="card">
+              <svg width="54" height="34" viewBox="0 0 54 34" fill="none" aria-hidden="true">
+                <path d="M6 4 L6 30 L20 22 L20 12 Z" fill="rgba(255,255,255,.07)" stroke="#2b313f" stroke-width="1.3"/>
+                <path d="M20 12 L48 3 L48 31 L20 22 Z" fill="rgba(77,141,255,.14)" stroke="#4d8dff" stroke-width="1.5"/>
+              </svg>
+              <h3>Real projector output</h3>
+              <p>A borderless fullscreen window on the display you pick — no chrome, no handles. It owns its own playback, so nothing in the editor can stall the projection.</p>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section>
-      <div class="wrap split">
-        <div>
-          <h2>Map from where you can see it</h2>
-          <p class="lede" style="margin-bottom: 0">
-            Mapping is otherwise a two-person job: one at the laptop, one at the wall.
-            Press <strong>Remote</strong>, scan the QR code with a phone on the same
-            Wi-Fi, and drag the corners with your thumbs while looking at the actual
-            projection.
-          </p>
-          <ul class="ticks">
-            <li>Touch-sized handles on a live view of your surfaces</li>
-            <li>Assign media, adjust opacity and edge blending</li>
-            <li>A nudge pad down to a quarter of an output pixel</li>
-            <li>Optional low-rate preview of the output itself</li>
-            <li>Link carries a random key; reissue it or stop the server when you're done</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3><span class="dot"></span>Keyboard, on the desktop</h3>
-          <div class="table-scroll">
-            <table>
-              <tr><td><kbd>Q</kbd> / <kbd>M</kbd></td><td>Add quad / mesh surface</td></tr>
-              <tr><td><kbd>V</kbd></td><td>Warp tool</td></tr>
-              <tr><td><kbd>K</kbd></td><td>Mask tool</td></tr>
-              <tr><td><kbd>I</kbd></td><td>Source crop tool</td></tr>
-              <tr><td><kbd>F</kbd></td><td>Fit view</td></tr>
-              <tr><td>Arrows</td><td>Nudge (Shift ×10, Alt sub-pixel)</td></tr>
-              <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr>
-            </table>
+      <section>
+        <div class="wrap">
+          <p class="eyebrow">The editor</p>
+          <h2>Surfaces, sources and an inspector for everything</h2>
+          <div class="shot">
+            <img src="screenshot.png" alt="The Zmaper editor: a keystoned quad and a curved mesh surface, with the inspector open on the right." width="1484" height="901" loading="lazy" />
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section>
-      <div class="wrap">
-        <h2>Honest limits</h2>
-        <p class="lede">What it is not, so you can judge before downloading.</p>
-        <div class="grid">
-          <div class="card">
-            <h3><span class="dot"></span>Windows only, for now</h3>
-            <p>Built and tested on Windows 10/11 x64. The code is Electron and WebGL2, so macOS and Linux builds are a packaging change rather than a rewrite — they just have not been made or tested.</p>
-          </div>
-          <div class="card">
-            <h3><span class="dot"></span>One output window</h3>
-            <p>Multi-projector today means one machine per projector, or one wide output spanning several via the GPU. There is no Spout, NDI, DMX or audio reactivity.</p>
-          </div>
-          <div class="card">
-            <h3><span class="dot"></span>Codecs</h3>
-            <p>H.264 MP4, WebM, MOV and OGV decode; HEVC/H.265 does not. A clip that cannot be decoded is flagged in red in the media list rather than failing silently.</p>
+      <section>
+        <div class="wrap">
+          <p class="eyebrow">Phone remote</p>
+          <h2>Map from where you can actually see it</h2>
+          <div class="split">
+            <div>
+              <p class="lede" style="margin-top:0">
+                Mapping is otherwise a two-person job: one at the laptop, one at the wall.
+                Press <strong>Remote</strong>, scan the QR code with a phone on the same
+                Wi-Fi, and drag the corners with your thumbs while watching the real
+                projection.
+              </p>
+              <ul class="ticks">
+                <li>Touch-sized handles on a live view of your surfaces</li>
+                <li>Assign media, adjust opacity and edge blending</li>
+                <li>A nudge pad down to a quarter of an output pixel</li>
+                <li>Optional low-rate preview of the output itself</li>
+                <li>Link carries a random key — reissue it or stop the server when you're done</li>
+              </ul>
+            </div>
+            <div class="keys">
+              <p class="eyebrow" style="padding-top:14px">Desktop shortcuts</p>
+              <table>
+                <tr><td><kbd>Q</kbd> / <kbd>M</kbd></td><td>Add quad / mesh</td></tr>
+                <tr><td><kbd>V</kbd> <kbd>K</kbd> <kbd>I</kbd></td><td>Warp / mask / source tool</td></tr>
+                <tr><td><kbd>F</kbd></td><td>Fit view</td></tr>
+                <tr><td>Arrows</td><td>Nudge — <kbd>Shift</kbd> &times;10, <kbd>Alt</kbd> sub-pixel</td></tr>
+                <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section>
+        <div class="wrap">
+          <p class="eyebrow">Honest limits</p>
+          <h2>What it isn't</h2>
+          <p class="lede">Worth knowing before you download.</p>
+          <div class="grid">
+            <div class="card">
+              <h3>Windows only, for now</h3>
+              <p>Built and tested on Windows 10/11 x64. It's Electron and WebGL2 underneath, so macOS and Linux are a packaging change rather than a rewrite — they just haven't been built or tested.</p>
+            </div>
+            <div class="card">
+              <h3>One output window</h3>
+              <p>Multi-projector means one machine each, or one wide output spanning displays via the GPU. No Spout, NDI, DMX or audio reactivity.</p>
+            </div>
+            <div class="card">
+              <h3>Codecs</h3>
+              <p>H.264 MP4, WebM, MOV and OGV decode. HEVC/H.265 does not — and media that can't be decoded is flagged red in the list rather than failing silently.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
 
     <footer>
       <div class="wrap">
@@ -397,5 +547,353 @@
         </p>
       </div>
     </footer>
+
+    <script>
+      /* ------------------------------------------------------------------
+         The hero is a working warp, not a picture of one. It runs the same
+         projective homography the app uses: Heckbert's square-to-quad map,
+         fed to a vertex shader that pushes a tessellated unit square through
+         it. Drag a corner and you are doing exactly what the editor does.
+      ------------------------------------------------------------------ */
+      (function () {
+        const stage = document.getElementById('stage');
+        const glCanvas = document.getElementById('gl');
+        const uiCanvas = document.getElementById('ui');
+        const hint = document.getElementById('hint');
+
+        const gl = glCanvas.getContext('webgl2', { alpha: true, antialias: true, premultipliedAlpha: true });
+        if (!gl) { stage.classList.add('no-gl'); return; }
+
+        const ui = uiCanvas.getContext('2d');
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        /* ---- corners, in 0..1 stage space. Starts keystoned on purpose. --- */
+        const START = [{ x: .11, y: .17 }, { x: .90, y: .07 }, { x: .93, y: .86 }, { x: .07, y: .94 }];
+        let corners = START.map((p) => ({ ...p }));
+
+        /* ---- Heckbert: unit square -> quad, as a column-major mat3 -------- */
+        function squareToQuad(p0, p1, p2, p3) {
+          const sx = p0.x - p1.x + p2.x - p3.x;
+          const sy = p0.y - p1.y + p2.y - p3.y;
+          let a, b, c, d, e, f, g, h;
+          if (Math.abs(sx) < 1e-12 && Math.abs(sy) < 1e-12) {
+            a = p1.x - p0.x; b = p2.x - p1.x; c = p0.x;
+            d = p1.y - p0.y; e = p2.y - p1.y; f = p0.y; g = 0; h = 0;
+          } else {
+            const dx1 = p1.x - p2.x, dx2 = p3.x - p2.x;
+            const dy1 = p1.y - p2.y, dy2 = p3.y - p2.y;
+            let den = dx1 * dy2 - dy1 * dx2;
+            if (Math.abs(den) < 1e-12) den = 1e-12;
+            g = (sx * dy2 - sy * dx2) / den;
+            h = (dx1 * sy - dy1 * sx) / den;
+            a = p1.x - p0.x + g * p1.x; b = p3.x - p0.x + h * p3.x; c = p0.x;
+            d = p1.y - p0.y + g * p1.y; e = p3.y - p0.y + h * p3.y; f = p0.y;
+          }
+          return new Float32Array([a, d, g, b, e, h, c, f, 1]);
+        }
+        const applyH = (m, s, t) => {
+          let w = m[2] * s + m[5] * t + m[8];
+          if (Math.abs(w) < 1e-12) w = 1e-12;
+          return [(m[0] * s + m[3] * t + m[6]) / w, (m[1] * s + m[4] * t + m[7]) / w];
+        };
+
+        /* ---- shaders ------------------------------------------------------ */
+        const VS = `#version 300 es
+        precision highp float;
+        in vec2 aParam;
+        uniform mat3 uH;
+        out vec2 vUV;
+        void main() {
+          vec3 h = uH * vec3(aParam, 1.0);
+          vec2 p = h.xy / h.z;
+          vUV = aParam;
+          gl_Position = vec4(p.x * 2.0 - 1.0, 1.0 - p.y * 2.0, 0.0, 1.0);
+        }`;
+
+        const FS = `#version 300 es
+        precision highp float;
+        in vec2 vUV;
+        uniform sampler2D uTex;
+        out vec4 o;
+        void main() {
+          vec4 c = texture(uTex, vUV);
+          // soft edge falloff, like a feathered surface
+          vec2 d = min(vUV, 1.0 - vUV);
+          float edge = smoothstep(0.0, 0.035, min(d.x, d.y));
+          o = vec4(c.rgb * edge, edge);
+        }`;
+
+        function compile(type, src) {
+          const s = gl.createShader(type);
+          gl.shaderSource(s, src); gl.compileShader(s);
+          return s;
+        }
+        const prog = gl.createProgram();
+        gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+        gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+        gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { stage.classList.add('no-gl'); return; }
+        gl.useProgram(prog);
+
+        const uH = gl.getUniformLocation(prog, 'uH');
+
+        /* ---- tessellated unit square -------------------------------------- */
+        const N = 28;
+        const params = [], idx = [];
+        for (let j = 0; j <= N; j++) for (let i = 0; i <= N; i++) params.push(i / N, j / N);
+        for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+          const a = j * (N + 1) + i, b = a + 1, c2 = a + N + 1, d2 = c2 + 1;
+          idx.push(a, b, c2, b, d2, c2);
+        }
+        const vao = gl.createVertexArray();
+        gl.bindVertexArray(vao);
+        const pb = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, pb);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(params), gl.STATIC_DRAW);
+        const loc = gl.getAttribLocation(prog, 'aParam');
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+        const ib = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(idx), gl.STATIC_DRAW);
+
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+        /* ---- the "content" being projected: an animated canvas ------------ */
+        const TW = 640, TH = 400;
+        const src = document.createElement('canvas');
+        src.width = TW; src.height = TH;
+        const sx2 = src.getContext('2d');
+        const tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+        function drawContent(t) {
+          const g = sx2;
+          g.fillStyle = '#07080c';
+          g.fillRect(0, 0, TW, TH);
+
+          // pulsing rings. `phase` is wrapped into 0..1 the long way round:
+          // the rAF timestamp can precede t0 on the first frame, and a
+          // negative radius makes arc() throw.
+          for (let i = 0; i < 7; i++) {
+            const phase = (((t * .16 + i / 7) % 1) + 1) % 1;
+            const r = Math.max(0, phase * 300);
+            g.beginPath();
+            g.arc(TW / 2, TH / 2, r, 0, Math.PI * 2);
+            g.strokeStyle = `rgba(${77 + i * 20}, ${120 - i * 6}, 255, ${(1 - phase) * .5})`;
+            g.lineWidth = 2.4;
+            g.stroke();
+          }
+
+          // grid
+          g.strokeStyle = 'rgba(120,150,220,.17)';
+          g.lineWidth = 1;
+          g.beginPath();
+          for (let i = 0; i <= 16; i++) {
+            const x = (i / 16) * TW, y = (i / 16) * TH;
+            g.moveTo(x, 0); g.lineTo(x, TH);
+            g.moveTo(0, y); g.lineTo(TW, y);
+          }
+          g.stroke();
+
+          // sweeping colour bar
+          const bx = ((t * .22) % 1.4 - .2) * TW;
+          const grd = g.createLinearGradient(bx - 70, 0, bx + 70, 0);
+          grd.addColorStop(0, 'rgba(77,141,255,0)');
+          grd.addColorStop(.45, 'rgba(168,85,247,.5)');
+          grd.addColorStop(.55, 'rgba(255,77,125,.5)');
+          grd.addColorStop(1, 'rgba(255,77,125,0)');
+          g.fillStyle = grd;
+          g.fillRect(bx - 70, 0, 140, TH);
+
+          // wordmark
+          g.font = '700 86px "Segoe UI", system-ui, sans-serif';
+          g.textAlign = 'center';
+          g.textBaseline = 'middle';
+          g.shadowColor = 'rgba(120,170,255,.65)';
+          g.shadowBlur = 26;
+          g.fillStyle = '#ffffff';
+          g.fillText('ZMAPER', TW / 2, TH / 2 - 6);
+          g.shadowBlur = 0;
+
+          g.font = '500 17px ui-monospace, Consolas, monospace';
+          g.fillStyle = 'rgba(190,210,255,.78)';
+          g.fillText('PROJECTION  MAPPING', TW / 2, TH / 2 + 52);
+
+          // corner ticks, like a calibration target
+          g.strokeStyle = 'rgba(255,255,255,.5)';
+          g.lineWidth = 3;
+          const m = 16, L = 34;
+          [[m, m, 1, 1], [TW - m, m, -1, 1], [TW - m, TH - m, -1, -1], [m, TH - m, 1, -1]].forEach(([x, y, dx, dy]) => {
+            g.beginPath();
+            g.moveTo(x + dx * L, y); g.lineTo(x, y); g.lineTo(x, y + dy * L);
+            g.stroke();
+          });
+        }
+
+        /* ---- sizing -------------------------------------------------------- */
+        let W = 0, H = 0, dpr = 1;
+        function resize() {
+          const r = stage.getBoundingClientRect();
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          W = Math.max(1, Math.round(r.width * dpr));
+          H = Math.max(1, Math.round(r.height * dpr));
+          if (glCanvas.width !== W) { glCanvas.width = W; glCanvas.height = H; }
+          if (uiCanvas.width !== W) { uiCanvas.width = W; uiCanvas.height = H; }
+          gl.viewport(0, 0, W, H);
+        }
+        new ResizeObserver(resize).observe(stage);
+        resize();
+
+        /* ---- handles / dragging -------------------------------------------- */
+        let dragging = -1, hovered = -1, touched = false;
+
+        const toLocal = (e) => {
+          const r = stage.getBoundingClientRect();
+          return { x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height };
+        };
+        const nearest = (p) => {
+          const r = stage.getBoundingClientRect();
+          let best = -1, bd = 30;
+          corners.forEach((c, i) => {
+            const d = Math.hypot((c.x - p.x) * r.width, (c.y - p.y) * r.height);
+            if (d < bd) { bd = d; best = i; }
+          });
+          return best;
+        };
+
+        stage.addEventListener('pointerdown', (e) => {
+          const p = toLocal(e);
+          const i = nearest(p);
+          if (i < 0) return;
+          e.preventDefault();
+          dragging = i;
+          touched = true;
+          hint.style.opacity = '0';
+          stage.classList.add('dragging');
+          stage.setPointerCapture(e.pointerId);
+        });
+
+        stage.addEventListener('pointermove', (e) => {
+          const p = toLocal(e);
+          if (dragging < 0) { hovered = nearest(p); return; }
+          corners[dragging] = {
+            x: Math.max(-.04, Math.min(1.04, p.x)),
+            y: Math.max(-.04, Math.min(1.04, p.y))
+          };
+        });
+
+        const endDrag = (e) => {
+          dragging = -1;
+          stage.classList.remove('dragging');
+          try { stage.releasePointerCapture(e.pointerId); } catch (_) {}
+        };
+        stage.addEventListener('pointerup', endDrag);
+        stage.addEventListener('pointercancel', endDrag);
+        stage.addEventListener('pointerleave', () => { hovered = -1; });
+
+        document.getElementById('reset').addEventListener('click', () => {
+          corners = START.map((p) => ({ ...p }));
+        });
+
+        /* ---- overlay: wireframe + handles, drawn like the editor ----------- */
+        function drawUI(m) {
+          ui.setTransform(1, 0, 0, 1, 0, 0);
+          ui.clearRect(0, 0, W, H);
+
+          ui.beginPath();
+          const steps = 10;
+          const edge = (a, b) => {
+            for (let s = 0; s <= steps; s++) {
+              const t = s / steps;
+              const q = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+              const [x, y] = applyH(m, q[0], q[1]);
+              s === 0 ? ui.moveTo(x * W, y * H) : ui.lineTo(x * W, y * H);
+            }
+          };
+          edge([0, 0], [1, 0]); edge([1, 0], [1, 1]); edge([1, 1], [0, 1]); edge([0, 1], [0, 0]);
+          ui.closePath();
+          ui.strokeStyle = 'rgba(126,172,255,.85)';
+          ui.lineWidth = 1.6 * dpr;
+          ui.stroke();
+
+          // interior thirds, faint
+          ui.beginPath();
+          for (let i = 1; i < 3; i++) {
+            edge([i / 3, 0], [i / 3, 1]);
+            edge([0, i / 3], [1, i / 3]);
+          }
+          ui.strokeStyle = 'rgba(126,172,255,.2)';
+          ui.lineWidth = 1 * dpr;
+          ui.stroke();
+
+          corners.forEach((c, i) => {
+            const x = c.x * W, y = c.y * H;
+            const active = i === dragging || i === hovered;
+            const r = (active ? 9.5 : 7) * dpr;
+            ui.beginPath();
+            ui.arc(x, y, r + 5 * dpr, 0, Math.PI * 2);
+            ui.fillStyle = 'rgba(77,141,255,.16)';
+            ui.fill();
+            ui.beginPath();
+            ui.arc(x, y, r, 0, Math.PI * 2);
+            ui.fillStyle = active ? '#ffb020' : '#4d8dff';
+            ui.fill();
+            ui.lineWidth = 2 * dpr;
+            ui.strokeStyle = 'rgba(232,240,255,.95)';
+            ui.stroke();
+          });
+        }
+
+        /* ---- loop ---------------------------------------------------------- */
+        let running = true, t0 = performance.now();
+        new IntersectionObserver((es) => { running = es[0].isIntersecting; }, { threshold: 0 }).observe(stage);
+
+        // Phones get half the frame rate: this is decoration, not the product.
+        const coarse = window.matchMedia('(pointer: coarse)').matches;
+        const minFrame = coarse ? 1000 / 30 : 0;
+        let lastFrame = 0;
+
+        let lastNudge = 0;
+        function frame(now) {
+          requestAnimationFrame(frame);
+          if (!running) return;
+          if (now - lastFrame < minFrame) return;
+          lastFrame = now;
+
+          const t = Math.max(0, (now - t0) / 1000);
+
+          // before anyone touches it, drift the corners gently so it reads as alive
+          if (!touched && !reduced && now - lastNudge > 16) {
+            lastNudge = now;
+            for (let i = 0; i < 4; i++) {
+              corners[i].x = START[i].x + Math.sin(t * .45 + i * 1.7) * .016;
+              corners[i].y = START[i].y + Math.cos(t * .38 + i * 2.3) * .016;
+            }
+          }
+
+          drawContent(reduced ? 0 : t);
+          gl.bindTexture(gl.TEXTURE_2D, tex);
+          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+
+          gl.clearColor(0, 0, 0, 0);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+
+          const m = squareToQuad(corners[0], corners[1], corners[2], corners[3]);
+          gl.useProgram(prog);
+          gl.uniformMatrix3fv(uH, false, m);
+          gl.bindVertexArray(vao);
+          gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_INT, 0);
+
+          drawUI(m);
+        }
+        requestAnimationFrame(frame);
+      })();
+    </script>
   </body>
 </html>
