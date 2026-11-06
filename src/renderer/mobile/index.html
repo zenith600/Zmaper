@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#121317" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Zmaper Remote</title>
+    <link rel="stylesheet" href="/mobile/mobile.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <span class="dot" id="dot" title="Connection"></span>
+      <span class="title" id="title">Zmaper Remote</span>
+      <button class="chip" id="btn-preview" aria-pressed="false">Preview</button>
+      <button class="chip" id="btn-undo">Undo</button>
+    </header>
+
+    <main class="viewport" id="viewport">
+      <div class="frame" id="frame">
+        <img id="preview" alt="" />
+        <canvas id="map"></canvas>
+      </div>
+      <p class="offline" id="offline">Connecting&hellip;</p>
+    </main>
+
+    <nav class="tabs" id="tabs">
+      <button data-tab="surfaces" class="active">Surfaces</button>
+      <button data-tab="media">Media</button>
+      <button data-tab="tune">Tune</button>
+      <button data-tab="nudge">Nudge</button>
+    </nav>
+
+    <section class="panel" id="panel"></section>
+
+    <script type="module" src="/mobile/mobile.js"></script>
+  </body>
+</html>

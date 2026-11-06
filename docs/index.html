@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zmaper — projection mapping for Windows</title>
+    <meta name="description" content="Open-source projection mapping: quad and mesh warping, video, images and live camera, masks and edge blending, with a phone remote for mapping from in front of the surface." />
+    <meta name="theme-color" content="#0e0f13" />
+    <link rel="icon" href="icon.png" />
+
+    <meta property="og:title" content="Zmaper — projection mapping for Windows" />
+    <meta property="og:description" content="Quad and mesh warping, masks, edge blending and a phone remote. Free and open source." />
+    <meta property="og:image" content="screenshot.png" />
+    <meta property="og:type" content="website" />
+
+    <style>
+      :root {
+        --bg: #0e0f13;
+        --bg-2: #15171d;
+        --bg-3: #1b1e26;
+        --line: #262a35;
+        --text: #e4e8f1;
+        --dim: #949bad;
+        --faint: #6b7284;
+        --accent: #4d8dff;
+        --radius: 10px;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+
+      a { color: var(--accent); }
+
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding-inline: 20px;
+      }
+
+      /* ---------- hero ---------- */
+
+      .hero {
+        position: relative;
+        padding-block: 72px 56px;
+        text-align: center;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: -40% 50% auto;
+        width: 900px;
+        height: 520px;
+        transform: translateX(-50%);
+        background: radial-gradient(ellipse at center, rgba(77, 141, 255, 0.18), transparent 65%);
+        pointer-events: none;
+      }
+
+      .hero > * { position: relative; }
+
+      .logo {
+        width: 84px;
+        height: 84px;
+        border-radius: 20px;
+        margin-bottom: 22px;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+      }
+
+      h1 {
+        font-size: clamp(2.3rem, 7vw, 3.4rem);
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        font-weight: 700;
+        background: linear-gradient(100deg, #ffffff 15%, #9ec0ff 55%, #c79bff 90%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .tagline {
+        margin: 16px auto 0;
+        max-width: 620px;
+        color: var(--dim);
+        font-size: clamp(1rem, 2.4vw, 1.14rem);
+      }
+
+      .cta {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 34px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 13px 24px;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        background: var(--bg-3);
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 15px;
+        transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+      }
+
+      .btn:hover { transform: translateY(-2px); border-color: #3b4152; }
+
+      .btn.primary {
+        background: linear-gradient(100deg, #4d8dff, #7a6cff);
+        border-color: transparent;
+        color: #06101f;
+      }
+
+      .btn small {
+        display: block;
+        font-weight: 500;
+        font-size: 12px;
+        opacity: 0.75;
+      }
+
+      .note {
+        margin-top: 18px;
+        color: var(--faint);
+        font-size: 13px;
+      }
+
+      /* ---------- shot ---------- */
+
+      .shot {
+        margin: 8px auto 0;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+        background: var(--bg-2);
+        line-height: 0;
+      }
+
+      .shot img { width: 100%; height: auto; display: block; }
+
+      /* ---------- sections ---------- */
+
+      section { padding-block: 56px; }
+
+      h2 {
+        font-size: clamp(1.45rem, 4vw, 1.9rem);
+        letter-spacing: -0.01em;
+        margin-bottom: 10px;
+      }
+
+      .lede { color: var(--dim); max-width: 640px; margin-bottom: 30px; }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 20px;
+      }
+
+      .card h3 {
+        font-size: 1rem;
+        margin-bottom: 7px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+
+      .card p { color: var(--dim); font-size: 14.5px; }
+
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4d8dff, #a855f7);
+        flex: 0 0 auto;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 34px;
+        align-items: center;
+      }
+
+      @media (max-width: 760px) {
+        .split { grid-template-columns: 1fr; gap: 22px; }
+      }
+
+      ul.ticks { list-style: none; margin-top: 14px; }
+
+      ul.ticks li {
+        color: var(--dim);
+        font-size: 14.5px;
+        padding-left: 24px;
+        position: relative;
+        margin-bottom: 9px;
+      }
+
+      ul.ticks li::before {
+        content: "";
+        position: absolute;
+        left: 2px;
+        top: 9px;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4d8dff, #a855f7);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14.5px;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 11px 12px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      th { color: var(--faint); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.7px; }
+      td { color: var(--dim); }
+      td kbd {
+        background: var(--bg-3);
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        padding: 2px 7px;
+        font-family: ui-monospace, Consolas, monospace;
+        font-size: 12.5px;
+        color: var(--text);
+      }
+
+      .table-scroll { overflow-x: auto; }
+
+      footer {
+        border-top: 1px solid var(--line);
+        padding-block: 30px 54px;
+        color: var(--faint);
+        font-size: 14px;
+      }
+
+      footer a { color: var(--dim); }
+    </style>
+  </head>
+
+  <body>
+    <header class="hero">
+      <div class="wrap">
+        <img class="logo" src="icon.png" alt="" />
+        <h1>Projection mapping,<br />without the licence fee</h1>
+        <p class="tagline">
+          Warp video, images and live camera onto real objects. Quad and mesh surfaces,
+          polygon masks, soft edge blending, and a phone remote so you can map while
+          standing at the wall instead of hunched over the laptop.
+        </p>
+
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/zenith600/Zmaper/releases/latest/download/Zmaper-Setup-1.0.0.exe">
+            Download for Windows <small>Installer · 78 MB</small>
+          </a>
+          <a class="btn" href="https://github.com/zenith600/Zmaper/releases/latest/download/Zmaper-1.0.0-portable.exe">
+            Portable build <small>No install · 78 MB</small>
+          </a>
+          <a class="btn" href="https://github.com/zenith600/Zmaper">Source on GitHub</a>
+        </div>
+
+        <p class="note">
+          Windows 10/11, 64-bit. The build is unsigned, so Windows shows a SmartScreen
+          warning on first launch — choose <em>More info</em> then <em>Run anyway</em>.
+        </p>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="shot">
+        <img src="screenshot.png" alt="The Zmaper editor: a keystoned quad and a curved mesh surface, with the inspector open on the right." width="1484" height="901" />
+      </div>
+    </div>
+
+    <section>
+      <div class="wrap">
+        <h2>What it does</h2>
+        <p class="lede">Everything you need to line a projector up with a real object and keep it there.</p>
+
+        <div class="grid">
+          <div class="card">
+            <h3><span class="dot"></span>Quad warping</h3>
+            <p>Four corners, full keystone. A true projective homography, so the image stays perspective-correct no matter how hard you skew it — right for flat panels, screens and walls.</p>
+          </div>
+          <div class="card">
+            <h3><span class="dot"></span>Mesh warping</h3>
+            <p>An n×m control grid interpolated as Catmull-Rom patches, which is what makes curved walls, columns, cylinders and domes land properly. Change the grid density any time without losing your shape.</p>
+          </div>
+          <div class="card">
+            <h3><span class="dot"></span>Masks that stay put</h3>
+            <p>Draw polygon masks with feathering. They live in the surface's own coordinate space, so a mask stays locked to the surface however much you keep warping it.</p>
+          </div>
+          <div class="card">
+            <h3><span class="dot"></span>Edge blending</h3>
+            <p>Per-edge feathering with an adjustable blend gamma, so two overlapping projectors sum to a flat field instead of a bright seam down the middle.</p>
+          </div>
+          <div class="card">
+            <h3><span class="dot"></span>Any source</h3>
+            <p>Video, stills, live webcam, solid colours, and built-in calibration patterns — a labelled grid, colour bars, linearity squares and more. Drag files straight onto a surface.</p>
+          </div>
+          <div class="card">
+            <h3><span class="dot"></span>Real projector output</h3>
+            <p>A borderless fullscreen window on the display you choose, with no chrome and no handles. It owns its own playback, so nothing in the editor can stall the projection.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap split">
+        <div>
+          <h2>Map from where you can see it</h2>
+          <p class="lede" style="margin-bottom: 0">
+            Mapping is otherwise a two-person job: one at the laptop, one at the wall.
+            Press <strong>Remote</strong>, scan the QR code with a phone on the same
+            Wi-Fi, and drag the corners with your thumbs while looking at the actual
+            projection.
+          </p>
+          <ul class="ticks">
+            <li>Touch-sized handles on a live view of your surfaces</li>
+            <li>Assign media, adjust opacity and edge blending</li>
+            <li>A nudge pad down to a quarter of an output pixel</li>
+            <li>Optional low-rate preview of the output itself</li>
+            <li>Link carries a random key; reissue it or stop the server when you're done</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="dot"></span>Keyboard, on the desktop</h3>
+          <div class="table-scroll">
+            <table>
+              <tr><td><kbd>Q</kbd> / <kbd>M</kbd></td><td>Add quad / mesh surface</td></tr>
+              <tr><td><kbd>V</kbd></td><td>Warp tool</td></tr>
+              <tr><td><kbd>K</kbd></td><td>Mask tool</td></tr>
+              <tr><td><kbd>I</kbd></td><td>Source crop tool</td></tr>
+              <tr><td><kbd>F</kbd></td><td>Fit view</td></tr>
+              <tr><td>Arrows</td><td>Nudge (Shift ×10, Alt sub-pixel)</td></tr>
+              <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <h2>Honest limits</h2>
+        <p class="lede">What it is not, so you can judge before downloading.</p>
+        <div class="grid">
+          <div class="card">
+            <h3><span class="dot"></span>Windows only, for now</h3>
+            <p>Built and tested on Windows 10/11 x64. The code is Electron and WebGL2, so macOS and Linux builds are a packaging change rather than a rewrite — they just have not been made or tested.</p>
+          </div>
+          <div class="card">
+            <h3><span class="dot"></span>One output window</h3>
+            <p>Multi-projector today means one machine per projector, or one wide output spanning several via the GPU. There is no Spout, NDI, DMX or audio reactivity.</p>
+          </div>
+          <div class="card">
+            <h3><span class="dot"></span>Codecs</h3>
+            <p>H.264 MP4, WebM, MOV and OGV decode; HEVC/H.265 does not. A clip that cannot be decoded is flagged in red in the media list rather than failing silently.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <p>
+          Zmaper is free and open source under the MIT licence —
+          <a href="https://github.com/zenith600/Zmaper">source and issues on GitHub</a>.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' file: data: blob:; media-src 'self' file: data: blob:;" />
+    <title>Zmaper</title>
+    <link rel="stylesheet" href="editor.css" />
+  </head>
+  <body>
+    <!-- ===================== Toolbar ===================== -->
+    <header class="toolbar">
+      <div class="brand"><span class="brand-mark"></span>Zmaper</div>
+
+      <div class="tb-group">
+        <button class="btn" id="btn-new" title="New project (Ctrl+N)">New</button>
+        <button class="btn" id="btn-open" title="Open project (Ctrl+O)">Open</button>
+        <button class="btn" id="btn-save" title="Save project (Ctrl+S)">Save</button>
+      </div>
+
+      <div class="tb-sep"></div>
+
+      <div class="tb-group">
+        <button class="btn" id="btn-add-quad" title="Add quad surface (Q)">+ Quad</button>
+        <button class="btn" id="btn-add-mesh" title="Add mesh surface (M)">+ Mesh</button>
+        <button class="btn" id="btn-add-media" title="Add media files">+ Media</button>
+      </div>
+
+      <div class="tb-sep"></div>
+
+      <div class="tb-group">
+        <button class="btn tool" id="tool-select" data-tool="select" title="Select / warp (V)">Warp</button>
+        <button class="btn tool" id="tool-mask" data-tool="mask" title="Edit mask polygon (K)">Mask</button>
+        <button class="btn tool" id="tool-input" data-tool="input" title="Edit source crop (I)">Source</button>
+      </div>
+
+      <div class="tb-spacer"></div>
+
+      <div class="tb-group transport">
+        <button class="btn icon" id="btn-play" title="Play all video">&#9654;</button>
+        <button class="btn icon" id="btn-pause" title="Pause all video">&#10073;&#10073;</button>
+        <button class="btn icon" id="btn-restart" title="Restart all video">&#8634;</button>
+      </div>
+
+      <div class="tb-sep"></div>
+
+      <div class="tb-group">
+        <button class="btn" id="btn-remote" title="Control this map from a phone on the same network">Remote</button>
+        <select id="display-select" class="select" title="Output display"></select>
+        <button class="btn primary" id="btn-output" title="Open / close the projector output">Start Output</button>
+      </div>
+    </header>
+
+    <!-- ===================== Remote modal ===================== -->
+    <div class="modal-backdrop" id="remote-modal" hidden>
+      <div class="modal">
+        <div class="modal-head">
+          <span>Mobile remote</span>
+          <button class="modal-close" id="remote-close" title="Close">&times;</button>
+        </div>
+        <div class="modal-body" id="remote-body"></div>
+      </div>
+    </div>
+
+    <!-- ===================== Body ===================== -->
+    <div class="body">
+      <!-- ---------- Left: surfaces ---------- -->
+      <aside class="panel left">
+        <div class="panel-head">
+          <span>Surfaces</span>
+          <span class="count" id="surface-count">0</span>
+        </div>
+        <div class="list" id="surface-list"></div>
+
+        <div class="panel-head">
+          <span>Media</span>
+          <span class="head-actions">
+            <button class="mini" id="btn-add-file" title="Add video or image files">+ File</button>
+            <button class="mini" id="btn-add-webcam" title="Add a webcam source">+ Cam</button>
+          </span>
+        </div>
+        <div class="list media-list" id="media-list"></div>
+
+        <div class="panel-head"><span>Add pattern</span></div>
+        <div class="pattern-grid" id="pattern-grid"></div>
+      </aside>
+
+      <!-- ---------- Center: canvas ---------- -->
+      <main class="stage-wrap" id="stage-wrap">
+        <div class="stage-bar">
+          <span class="chip" id="view-label">Output view</span>
+          <span class="chip muted" id="res-label">1920 x 1080</span>
+          <div class="tb-spacer"></div>
+          <label class="chip toggle"><input type="checkbox" id="chk-wire" checked /> Wireframe</label>
+          <label class="chip toggle"><input type="checkbox" id="chk-handles" checked /> Handles</label>
+          <label class="chip toggle"><input type="checkbox" id="chk-snap" /> Snap</label>
+          <button class="chip btnish" id="btn-fit" title="Fit view (F)">Fit</button>
+          <span class="chip muted" id="zoom-label">100%</span>
+          <span class="chip muted" id="fps-label">- fps</span>
+        </div>
+
+        <div class="stage" id="stage">
+          <div class="stage-inner" id="stage-inner">
+            <canvas id="gl"></canvas>
+            <canvas id="overlay"></canvas>
+          </div>
+        </div>
+
+        <div class="status" id="status">
+          Drag corners to warp &middot; Alt+drag to move a surface &middot; Scroll to zoom &middot; Space+drag to pan
+        </div>
+      </main>
+
+      <!-- ---------- Right: inspector ---------- -->
+      <aside class="panel right" id="inspector">
+        <div class="panel-head"><span>Inspector</span></div>
+        <div class="inspector-body" id="inspector-body">
+          <p class="empty">Select a surface to edit it.</p>
+        </div>
+      </aside>
+    </div>
+
+    <script type="module" src="editor.js"></script>
+  </body>
+</html>

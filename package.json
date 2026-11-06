@@ -1,0 +1,66 @@
+{
+  "name": "zmaper",
+  "version": "1.0.0",
+  "description": "Projection mapping software - quad/mesh warping, media playback, masks and edge blending",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "dist": "electron-builder --win",
+    "dist:portable": "electron-builder --win portable",
+    "pack": "electron-builder --win --dir"
+  },
+  "author": "Zmaper",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.zmaper.app",
+    "productName": "Zmaper",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Zmaper",
+      "artifactName": "Zmaper-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "Zmaper-${version}-portable.${ext}"
+    }
+  },
+  "allowScripts": {
+    "electron@33.4.11": true
+  },
+  "dependencies": {
+    "qrcode-generator": "^2.0.4"
+  }
+}

@@ -1,0 +1,436 @@
+/* ============================================================
+   Zmaper Remote - phone UI
+   Touch targets are deliberately large: this gets used in the
+   dark, one-handed, standing in front of a projection surface.
+   ============================================================ */
+
+:root {
+  --bg: #121317;
+  --bg-2: #171920;
+  --bg-3: #1d2029;
+  --line: #262a35;
+  --text: #dfe3ec;
+  --text-dim: #8d94a5;
+  --text-faint: #5e6579;
+  --accent: #4d8dff;
+  --accent-soft: #2a3f66;
+  --warn: #ffb020;
+  --danger: #ff5470;
+  --ok: #3ddc97;
+  --radius: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  user-select: none;
+  -webkit-user-select: none;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* ---------------- Top bar ---------------- */
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--danger);
+  flex: 0 0 auto;
+  transition: background 0.2s ease;
+}
+
+.dot.live {
+  background: var(--ok);
+}
+
+.title {
+  flex: 1 1 auto;
+  font-weight: 600;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 12px;
+  flex: 0 0 auto;
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: #cfe0ff;
+}
+
+.chip:active {
+  background: #2a2f3d;
+}
+
+/* ---------------- Map viewport ---------------- */
+
+.viewport {
+  flex: 1 1 auto;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: #0b0c0f;
+  background-image: linear-gradient(45deg, #101115 25%, transparent 25%),
+    linear-gradient(-45deg, #101115 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #101115 75%),
+    linear-gradient(-45deg, transparent 75%, #101115 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+  overflow: hidden;
+  padding: 8px;
+}
+
+.frame {
+  position: relative;
+  background: #000;
+  box-shadow: 0 0 0 1px #343a49;
+  touch-action: none;
+}
+
+.frame img,
+.frame canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.frame img {
+  object-fit: fill;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.frame img.on {
+  opacity: 1;
+}
+
+.offline {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 11, 15, 0.88);
+  color: var(--text-dim);
+  font-size: 14px;
+  text-align: center;
+  padding: 20px;
+}
+
+.offline[hidden] {
+  display: none;
+}
+
+/* ---------------- Tabs ---------------- */
+
+.tabs {
+  display: flex;
+  background: var(--bg-2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+
+.tabs button {
+  flex: 1 1 0;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-faint);
+  font: inherit;
+  font-size: 13px;
+  padding: 11px 4px;
+}
+
+.tabs button.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+/* ---------------- Panel ---------------- */
+
+.panel {
+  flex: 0 0 38vh;
+  min-height: 150px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px 12px calc(16px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 11px 12px;
+  min-height: 48px;
+}
+
+.row.sel {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.row .name {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.row .tag {
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  background: var(--bg-3);
+  border-radius: 3px;
+  padding: 2px 6px;
+  flex: 0 0 auto;
+}
+
+.row .toggle {
+  width: 38px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--bg-3);
+  color: var(--text-faint);
+  font-size: 13px;
+  flex: 0 0 auto;
+}
+
+.row .toggle.on {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.row .toggle.solo.on {
+  color: var(--warn);
+  border-color: var(--warn);
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.field label {
+  flex: 0 0 84px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.field .val {
+  flex: 0 0 48px;
+  text-align: right;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 36px;
+  background: transparent;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  margin-top: -10px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid #0e1726;
+}
+
+.btn {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 14px;
+  padding: 12px 10px;
+  flex: 1 1 auto;
+}
+
+.btn:active {
+  background: #2a2f3d;
+}
+
+.btn.accent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #06101f;
+  font-weight: 650;
+}
+
+.btn.live {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #1a0308;
+  font-weight: 650;
+}
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-faint);
+  line-height: 1.5;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: 4px;
+}
+
+/* ---------------- Nudge pad ---------------- */
+
+.pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-width: 280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.pad button {
+  aspect-ratio: 1;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 20px;
+}
+
+.pad button:active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.pad .spacer {
+  visibility: hidden;
+}
+
+.seg {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.seg button {
+  flex: 1 1 0;
+  background: var(--bg-2);
+  border: none;
+  border-right: 1px solid var(--line);
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 13px;
+  padding: 11px 4px;
+}
+
+.seg button:last-child {
+  border-right: none;
+}
+
+.seg button.active {
+  background: var(--accent-soft);
+  color: #cfe0ff;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 9px 16px;
+  font-size: 13px;
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+@media (min-height: 760px) {
+  .panel {
+    flex-basis: 34vh;
+  }
+}
